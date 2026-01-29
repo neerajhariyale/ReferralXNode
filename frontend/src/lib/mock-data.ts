@@ -10,6 +10,7 @@ export interface Job {
   description: string;
   postedAt: string;
   tags: string[];
+  category?: 'Engineering' | 'Marketing' | 'Sales' | 'Operations' | 'Human Resources' | 'Design' | 'Other';
 }
 
 export interface UserProfile {
@@ -38,6 +39,7 @@ export const mockJobs: Job[] = [
     description: 'We are looking for a Senior Frontend Engineer to lead our UI/UX transformation...',
     postedAt: '2 days ago',
     tags: ['React', 'Next.js', 'TypeScript', 'Tailwind'],
+    category: 'Engineering',
   },
   {
     id: '6',
@@ -50,6 +52,7 @@ export const mockJobs: Job[] = [
     description: 'Looking for an HR Manager to oversee recruitment and employee relations...',
     postedAt: '5 hours ago',
     tags: ['HR', 'Recruiting', 'Management'],
+    category: 'Human Resources',
   },
   {
     id: '2',
@@ -62,6 +65,7 @@ export const mockJobs: Job[] = [
     description: 'Join our award-winning design team and shape the future of digital products...',
     postedAt: '1 day ago',
     tags: ['Figma', 'UI/UX', 'Design Systems'],
+    category: 'Design',
   },
   {
     id: '7',
@@ -74,6 +78,7 @@ export const mockJobs: Job[] = [
     description: 'Driven sales representative needed to expand our market reach...',
     postedAt: '1 day ago',
     tags: ['Sales', 'Communication', 'B2B'],
+    category: 'Sales',
   },
   {
     id: '3',
@@ -86,6 +91,7 @@ export const mockJobs: Job[] = [
     description: 'Seeking an experienced Backend Developer with Strong Java and Spring Boot skills...',
     postedAt: '4 hours ago',
     tags: ['Java', 'Spring Boot', 'AWS'],
+    category: 'Engineering',
   },
   {
     id: '4',
@@ -98,6 +104,7 @@ export const mockJobs: Job[] = [
     description: 'Lead our marketing initiatives and drive growth for our SaaS platform...',
     postedAt: '3 days ago',
     tags: ['Marketing', 'SEO', 'Content Strategy'],
+    category: 'Marketing',
   },
   {
     id: '8',
@@ -110,6 +117,7 @@ export const mockJobs: Job[] = [
     description: 'Coordinate daily operations and ensure smooth supply chain management...',
     postedAt: '2 days ago',
     tags: ['Operations', 'Logistics', 'Supply Chain'],
+    category: 'Operations',
   },
   {
     id: '5',
@@ -122,6 +130,7 @@ export const mockJobs: Job[] = [
     description: 'We need a DevOps expert to manage our cloud infrastructure and CI/CD pipelines...',
     postedAt: '1 week ago',
     tags: ['AWS', 'Kubernetes', 'Terraform'],
+    category: 'Engineering',
   },
 ];
 

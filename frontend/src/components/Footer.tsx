@@ -54,8 +54,8 @@ export function Footer() {
                             <Link href="#" className="text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"><Instagram className="h-5 w-5" /></Link>
                         </div>
                         <div className="space-y-2 text-sm">
-                            <Link href="#" className="block hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Privacy Policy</Link>
-                            <Link href="#" className="block hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Terms of Service</Link>
+                            <Link href="/privacy" className="block hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Privacy Policy</Link>
+                            <Link href="/terms" className="block hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Terms of Service</Link>
                         </div>
                     </div>
 

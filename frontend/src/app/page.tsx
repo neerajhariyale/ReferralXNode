@@ -15,6 +15,14 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<'it' | 'non-it'>('it');
 
   const filteredJobs = mockJobs.filter(job => {
+    // If category is present, use it for filtering
+    if (job.category) {
+      const itCategories = ['Engineering', 'Design'];
+      const isIT = itCategories.includes(job.category);
+      return activeTab === 'it' ? isIT : !isIT;
+    }
+
+    // Fallback for efficient backward compatibility if category is missing
     const itTags = ['React', 'Java', 'AWS', 'DevOps', 'Figma', 'Python', 'Node.js', 'Engineering'];
     const isIT = job.tags.some(tag => itTags.some(itTag => tag.includes(itTag)));
 

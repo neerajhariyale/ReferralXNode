@@ -1,19 +1,20 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { mockJobs, mockProfiles } from '@/lib/mock-data';
+import { mockJobs } from '@/lib/mock-data';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
-import { MapPin, Building2, Timer, ScanSearch, Users, ArrowRight, Share2 } from 'lucide-react';
+import { MapPin, Building2, Timer, Share2 } from 'lucide-react';
 import { useState } from 'react';
 import Link from 'next/link';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 // Simple ATS Scanner Mock Component for the Modal
 import { ATSScanner } from '@/components/ATSScanner';
+import { AIInsights } from '@/components/AIInsights';
 
 
 export default function JobDetailsPage() {
@@ -21,7 +22,7 @@ export default function JobDetailsPage() {
     const id = params.id as string;
     const job = mockJobs.find(j => j.id === id) || mockJobs[0]; // Fallback to first job if not found
 
-    const [referralsVisible, setReferralsVisible] = useState(false);
+    // const [referralsVisible, setReferralsVisible] = useState(false); // Removed unused state
 
     return (
         <div className="container mx-auto px-4 py-8">
@@ -84,75 +85,14 @@ export default function JobDetailsPage() {
                 <div className="space-y-6">
 
                     {/* AI Insights Card */}
-                    <Card className="border-blue-100 bg-blue-50/50 shadow-sm sticky top-24">
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2 text-blue-900">
-                                <ScanSearch className="h-5 w-5 text-blue-600" />
-                                AI Insights
-                            </CardTitle>
-                            <CardDescription className="text-blue-700/80">
-                                Boost your chances by 40%
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-
-                            {/* Action 1: Referrals */}
-                            <div className="space-y-3">
-                                <Button
-                                    variant="outline"
-                                    className="w-full justify-between bg-white hover:bg-white/80 border-blue-200 text-slate-700 hover:text-blue-700 transition-all font-medium h-auto py-3"
-                                    onClick={() => setReferralsVisible(!referralsVisible)}
-                                >
-                                    <span className="flex items-center gap-2">
-                                        <Users className="h-4 w-4" /> Check Connections
-                                    </span>
-                                    {referralsVisible ? (
-                                        <span className="bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full">3 Found</span>
-                                    ) : (
-                                        <ArrowRight className="h-4 w-4 text-slate-400" />
-                                    )}
-                                </Button>
-
-                                {referralsVisible && (
-                                    <div className="bg-white rounded-lg border border-blue-100 p-3 space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
-                                        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Likely to refer you</p>
-                                        {mockProfiles.map((profile) => (
-                                            <div key={profile.id} className="flex items-center gap-3">
-                                                <Avatar className="h-8 w-8 border border-zinc-100">
-                                                    <AvatarImage src={profile.avatar} />
-                                                    <AvatarFallback>{profile.name[0]}</AvatarFallback>
-                                                </Avatar>
-                                                <div className="flex-1 min-w-0">
-                                                    <p className="text-sm font-medium text-slate-900 truncate">{profile.name}</p>
-                                                    <p className="text-xs text-slate-500 truncate">{profile.role}</p>
-                                                </div>
-                                                <Badge variant="secondary" className="text-[10px] h-5 px-1.5 bg-blue-50 text-blue-700 border-blue-100">{profile.connectionDegree}</Badge>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Action 2: Scanner */}
-                            <Dialog>
-                                <DialogTrigger asChild>
-                                    <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white shadow-md">
-                                        Scan Resume for this Job
-                                    </Button>
-                                </DialogTrigger>
-                                <DialogContent className="sm:max-w-md">
-                                    <DialogHeader>
-                                        <DialogTitle>ATS Resume Scanner</DialogTitle>
-                                        <DialogDescription>
-                                            Upload your resume to see how well you match this job description.
-                                        </DialogDescription>
-                                    </DialogHeader>
-                                    <ATSScanner />
-                                </DialogContent>
-                            </Dialog>
-
-                        </CardContent>
-                    </Card>
+                    {/* AI Insights Component */}
+                    <div className="sticky top-24">
+                        <AIInsights
+                            company={job.company}
+                            jobTitle={job.title}
+                            location={job.location}
+                        />
+                    </div>
 
                 </div>
 

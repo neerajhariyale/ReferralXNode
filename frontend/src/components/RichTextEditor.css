@@ -1,0 +1,35 @@
+
+.ql-container.ql-snow {
+    border-bottom-left-radius: 0.375rem;
+    border-bottom-right-radius: 0.375rem;
+    border-color: var(--border) !important;
+    min-height: 200px;
+    font-family: inherit;
+}
+.ql-toolbar.ql-snow {
+    border-top-left-radius: 0.375rem;
+    border-top-right-radius: 0.375rem;
+    border-color: var(--border) !important; 
+    background-color: transparent;
+}
+.ql-editor {
+    min-height: 200px;
+}
+/* Dark mode adjustments for Toolbar icons if needed */
+.dark .ql-stroke {
+    stroke: #94a3b8 !important;
+}
+.dark .ql-fill {
+    fill: #94a3b8 !important;
+}
+.dark .ql-picker {
+    color: #94a3b8 !important;
+}
+/* Ensure borders are visible in both modes by mapping variable if needed, 
+   but tailwind --border usually maps to a color. */
+:root {
+    --border: #e2e8f0;
+}
+.dark {
+    --border: #1e293b;
+}
