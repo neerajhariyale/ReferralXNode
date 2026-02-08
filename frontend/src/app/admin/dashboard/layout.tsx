@@ -44,13 +44,13 @@ export default function AdminDashboardLayout({
             icon: LayoutDashboard,
         },
         {
-            title: "Job Postings",
-            href: "/admin/dashboard/jobs",
+            title: "Manage Jobs",
+            href: "/admin/jobs",
             icon: Briefcase,
         },
         {
             title: "Post New Job",
-            href: "/admin/dashboard/post",
+            href: "/post-job",
             icon: FilePlus,
         },
     ];

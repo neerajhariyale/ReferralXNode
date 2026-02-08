@@ -1,17 +1,19 @@
-import { Job } from "@/lib/mock-data";
+import { Job } from "@/types/job";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { MapPin, Building2, Timer, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { timeAgo, getCompanyLogo, isRecentJob } from "@/lib/format";
 
 interface JobCardProps {
     job: Job;
 }
 
 export function JobCard({ job }: JobCardProps) {
-    const isNew = job.postedAt.includes('hours') || job.postedAt.includes('1 day');
+    const isNew = isRecentJob(job.postedAt);
+    const logo = getCompanyLogo(job.company);
 
     return (
         <Card className="group relative transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl bg-white dark:bg-zinc-900/80 border border-slate-200 dark:border-white/10 dark:hover:border-blue-500/50 overflow-hidden backdrop-blur-sm rounded-2xl h-full flex flex-col">
@@ -33,7 +35,7 @@ export function JobCard({ job }: JobCardProps) {
             <div className="relative z-10 p-5 flex flex-col h-full">
                 <div className="flex items-start gap-4 mb-5">
                     <Avatar className="h-14 w-14 rounded-xl bg-slate-50 dark:bg-zinc-800 border border-slate-100 dark:border-zinc-700 shadow-sm p-2 group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
-                        <AvatarImage src={job.logo} alt={job.company} className="rounded-lg object-contain" />
+                        <AvatarImage src={logo} alt={job.company} className="rounded-lg object-contain" />
                         <AvatarFallback className="rounded-lg font-bold text-slate-500 dark:text-slate-400 bg-transparent text-lg">{job.company.substring(0, 2)}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0 pt-0.5">
@@ -54,7 +56,7 @@ export function JobCard({ job }: JobCardProps) {
                     </div>
                     <div className="h-4 w-px bg-slate-200 dark:bg-zinc-700 mx-auto"></div>
                     <div className="font-semibold text-slate-900 dark:text-white">
-                        {job.salary}
+                        {job.salaryRange}
                     </div>
                 </div>
 
@@ -70,7 +72,7 @@ export function JobCard({ job }: JobCardProps) {
                     <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-white/5">
                         <div className="flex items-center gap-1.5 text-xs font-medium text-slate-400 dark:text-slate-500">
                             <Timer className="h-3.5 w-3.5" />
-                            {job.postedAt}
+                            {timeAgo(job.postedAt)}
                         </div>
 
                         <Button asChild size="sm" className="rounded-lg bg-slate-900 dark:bg-slate-50 text-white dark:text-slate-900 hover:bg-blue-600 dark:hover:bg-blue-400 hover:text-white dark:hover:text-zinc-900 shadow-md transition-all group-hover:translate-x-1 h-8 px-4">

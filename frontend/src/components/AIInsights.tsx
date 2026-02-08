@@ -35,17 +35,35 @@ export function AIInsights({ company, jobTitle, location }: AIInsightsProps) {
         const fetchEmployees = async () => {
             setLoadingEmployees(true);
             try {
-                const res = await fetch('/api/ai-insights', {
+                // Use the new referral-suggestions API
+                const res = await fetch('/api/referral-suggestions', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'find_employees', company })
+                    body: JSON.stringify({
+                        company,
+                        jobTitle
+                    })
                 });
+
+                if (!res.ok) {
+                    throw new Error('Failed to fetch referral suggestions');
+                }
+
                 const data = await res.json();
-                if (data.employees) {
-                    setEmployees(data.employees);
+
+                if (data.suggestions && Array.isArray(data.suggestions)) {
+                    // Transform the suggestions to match the Employee interface
+                    const transformedEmployees = data.suggestions.map((suggestion: any) => ({
+                        name: suggestion.name,
+                        role: `${suggestion.title} • ${suggestion.department}`,
+                        profileUrl: suggestion.linkedinUrl
+                    }));
+                    setEmployees(transformedEmployees);
                 }
             } catch (error) {
-                console.error("Failed to fetch employees", error);
+                console.error("Failed to fetch referral suggestions", error);
+                // Set empty array on error
+                setEmployees([]);
             } finally {
                 setLoadingEmployees(false);
             }
@@ -54,7 +72,7 @@ export function AIInsights({ company, jobTitle, location }: AIInsightsProps) {
         if (company) {
             fetchEmployees();
         }
-    }, [company]);
+    }, [company, jobTitle]);
 
     const generateMessage = async (employeeName?: string, employeeRole?: string) => {
         setLoadingMessage(true);

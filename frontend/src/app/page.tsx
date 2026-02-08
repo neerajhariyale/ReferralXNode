@@ -5,29 +5,36 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { JobCard } from "@/components/JobCard";
-import { mockJobs } from "@/lib/mock-data";
-import { Search, Filter, Briefcase, Users, Code, Zap } from "lucide-react";
+import { useJobs } from "@/hooks/use-jobs";
+import { Search, Filter, Zap } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState<'it' | 'non-it'>('it');
+  const [page, setPage] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [locationQuery, setLocationQuery] = useState('');
 
-  const filteredJobs = mockJobs.filter(job => {
-    // If category is present, use it for filtering
-    if (job.category) {
-      const itCategories = ['Engineering', 'Design'];
-      const isIT = itCategories.includes(job.category);
-      return activeTab === 'it' ? isIT : !isIT;
-    }
-
-    // Fallback for efficient backward compatibility if category is missing
-    const itTags = ['React', 'Java', 'AWS', 'DevOps', 'Figma', 'Python', 'Node.js', 'Engineering'];
-    const isIT = job.tags.some(tag => itTags.some(itTag => tag.includes(itTag)));
-
-    return activeTab === 'it' ? isIT : !isIT;
+  // Fetch jobs from API
+  const { data, loading, error } = useJobs({
+    page,
+    size: 10,
+    sortBy: 'postedAt',
+    sortDir: 'DESC',
+    title: searchQuery || undefined,
+    location: locationQuery || undefined,
   });
+
+  const handleSearch = () => {
+    setPage(0); // Reset to first page on new search
+  };
+
+  const handleLoadMore = () => {
+    if (data && !data.last) {
+      setPage(page + 1);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-slate-50/50 dark:bg-zinc-950 transition-colors duration-300">
@@ -59,6 +66,9 @@ export default function Home() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
               <Input
                 placeholder="Job title, keywords, or company..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 className="h-12 pl-10 text-base border-0 shadow-none focus-visible:ring-0 bg-transparent text-slate-900 dark:text-slate-100 placeholder:text-slate-400"
               />
             </div>
@@ -66,10 +76,17 @@ export default function Home() {
             <div className="relative flex-1 w-full md:w-auto">
               <Input
                 placeholder="City, state, or remote"
+                value={locationQuery}
+                onChange={(e) => setLocationQuery(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 className="h-12 text-base border-0 shadow-none focus-visible:ring-0 bg-transparent text-slate-900 dark:text-slate-100 placeholder:text-slate-400"
               />
             </div>
-            <Button size="lg" className="h-12 px-8 bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 text-white font-semibold rounded-xl w-full md:w-auto shadow-lg shadow-blue-200 dark:shadow-blue-900/20 transition-all hover:scale-[1.02]">
+            <Button
+              size="lg"
+              onClick={handleSearch}
+              className="h-12 px-8 bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 text-white font-semibold rounded-xl w-full md:w-auto shadow-lg shadow-blue-200 dark:shadow-blue-900/20 transition-all hover:scale-[1.02]"
+            >
               Search Jobs
             </Button>
           </div>
@@ -86,32 +103,6 @@ export default function Home() {
       </div>
 
       <div className="container mx-auto px-4 py-12">
-
-        {/* Category Tabs */}
-        <div className="flex justify-center mb-10">
-          <div className="inline-flex bg-white dark:bg-zinc-900 p-1.5 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
-            <button
-              onClick={() => setActiveTab('it')}
-              className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${activeTab === 'it'
-                ? 'bg-slate-900 dark:bg-slate-50 text-white dark:text-slate-900 shadow-md'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-zinc-800'
-                }`}
-            >
-              <Code className="h-4 w-4" />
-              IT & Engineering
-            </button>
-            <button
-              onClick={() => setActiveTab('non-it')}
-              className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${activeTab === 'non-it'
-                ? 'bg-slate-900 dark:bg-slate-50 text-white dark:text-slate-900 shadow-md'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-zinc-800'
-                }`}
-            >
-              <Users className="h-4 w-4" />
-              Marketing, Sales & Ops
-            </button>
-          </div>
-        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 items-start">
 
@@ -182,38 +173,83 @@ export default function Home() {
           <div className="md:col-span-3 space-y-6">
             <div className="flex items-center justify-between bg-white dark:bg-zinc-900 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm transition-colors">
               <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                {activeTab === 'it' ? 'Latest Tech Roles' : 'Latest Business Roles'}
+                Latest Jobs
               </h2>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-slate-500 dark:text-slate-400 font-medium bg-slate-50 dark:bg-zinc-800 px-3 py-1 rounded-full border border-slate-100 dark:border-zinc-700">
-                  {filteredJobs.length} Jobs Found
+                  {data ? data.totalElements : 0} Jobs Found
                 </span>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
-              {filteredJobs.length > 0 ? (
-                filteredJobs.map((job) => (
-                  <JobCard key={job.id} job={job} />
-                ))
-              ) : (
-                <div className="text-center py-20 bg-white dark:bg-zinc-900 rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-700">
-                  <div className="h-16 w-16 bg-slate-50 dark:bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Search className="h-8 w-8 text-slate-400 dark:text-slate-500" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">No jobs found</h3>
-                  <p className="text-slate-500 dark:text-slate-400 max-w-sm mx-auto mt-1">Try adjusting your filters or checking back later for new opportunities.</p>
-                  <Button variant="outline" className="mt-6 border-slate-200 dark:border-zinc-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-zinc-800" onClick={() => setActiveTab(activeTab === 'it' ? 'non-it' : 'it')}>
-                    View {activeTab === 'it' ? 'Business' : 'Tech'} Jobs
-                  </Button>
-                </div>
-              )}
-            </div>
-
-            {filteredJobs.length > 0 && (
-              <div className="flex justify-center mt-8">
-                <Button variant="outline" size="lg" className="px-8 font-medium border-slate-200 dark:border-zinc-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-zinc-800">Load More Jobs</Button>
+            {/* Loading State */}
+            {loading && (
+              <div className="text-center py-20 bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800">
+                <div className="h-16 w-16 border-4 border-blue-200 dark:border-blue-900 border-t-blue-600 dark:border-t-blue-400 rounded-full animate-spin mx-auto mb-4"></div>
+                <p className="text-slate-600 dark:text-slate-400">Loading jobs...</p>
               </div>
+            )}
+
+            {/* Error State */}
+            {error && (
+              <div className="text-center py-20 bg-red-50 dark:bg-red-900/10 rounded-2xl border border-red-200 dark:border-red-800">
+                <p className="text-red-600 dark:text-red-400 font-medium">Error: {error}</p>
+                <Button
+                  variant="outline"
+                  className="mt-4"
+                  onClick={() => window.location.reload()}
+                >
+                  Retry
+                </Button>
+              </div>
+            )}
+
+            {/* Jobs List */}
+            {!loading && !error && data && (
+              <>
+                <div className="grid grid-cols-1 gap-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                  {data.content.length > 0 ? (
+                    data.content.map((job) => (
+                      <JobCard key={job.id} job={job} />
+                    ))
+                  ) : (
+                    <div className="text-center py-20 bg-white dark:bg-zinc-900 rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-700">
+                      <div className="h-16 w-16 bg-slate-50 dark:bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Search className="h-8 w-8 text-slate-400 dark:text-slate-500" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">No jobs found</h3>
+                      <p className="text-slate-500 dark:text-slate-400 max-w-sm mx-auto mt-1">Try adjusting your search or checking back later for new opportunities.</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Pagination */}
+                {data.content.length > 0 && (
+                  <div className="flex justify-center items-center gap-4 mt-8">
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      onClick={() => setPage(Math.max(0, page - 1))}
+                      disabled={data.first}
+                      className="px-8 font-medium border-slate-200 dark:border-zinc-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-zinc-800 disabled:opacity-50"
+                    >
+                      Previous
+                    </Button>
+                    <span className="text-sm text-slate-600 dark:text-slate-400">
+                      Page {data.pageNumber + 1} of {data.totalPages}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      onClick={() => setPage(page + 1)}
+                      disabled={data.last}
+                      className="px-8 font-medium border-slate-200 dark:border-zinc-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-zinc-800 disabled:opacity-50"
+                    >
+                      Next
+                    </Button>
+                  </div>
+                )}
+              </>
             )}
           </div>
 
